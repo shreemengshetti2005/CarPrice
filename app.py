@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import numpy as np
-import datetime
-import cv2
+
+
 import matplotlib.pyplot as plt
 from tensorflow.keras import datasets, models, layers
 import pickle
