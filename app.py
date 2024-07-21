@@ -102,7 +102,7 @@ st.write("The predicted price is based on the provided information and market tr
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button('Download Prediction'):
+    with st.expander("Download Prediction"):
         prediction = int(yd['selling_price'][0])
         prediction_df = pd.DataFrame({
             "Brand": [brand],
@@ -113,12 +113,12 @@ with col1:
         st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
 
 with col2:
-    if st.button("Dataset Summary"):
+    with st.expander("Dataset Summary"):
         st.subheader("Dataset Summary")
         st.write(df.describe())
 
 with col3:
-    if st.button("Visualizations"):
+    with st.expander("Visualizations"):
         st.subheader("Data Visualizations")
 
         # Histogram of vehicle ages
@@ -143,6 +143,8 @@ with col3:
         ).interactive()
 
         st.altair_chart(scatter, use_container_width=True)
+
+# Sample Predictions and File Upload
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
