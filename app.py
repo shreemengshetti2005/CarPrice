@@ -139,11 +139,7 @@ if st.button("Predict Price"):
         csv = prediction_df.to_csv(index=False)
         st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
 
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-    if uploaded_file is not None:
-        custom_df = pd.read_csv(uploaded_file)
-        st.write(custom_df.head())
-        # Process the custom_df as needed
+
 
    # st.subheader("Sample Predictions")
     #sample_data = df.sample(5)
