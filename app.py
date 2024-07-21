@@ -30,13 +30,12 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Inject custom CSS for the background image
+# Inject custom CSS for the solid black background
 st.markdown("""
     <style>
     .main {
-      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/021/966/696/small/lot-of-used-car-for-sales-in-stock-with-sky-and-clouds-photo.jpg');
-      background-size: cover;
-      background-position: center;
+      background-color: black;
+      color: white;
     }
     .content-box {
       background-color: white;
@@ -145,33 +144,6 @@ with col3:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
-            # # Histogram of vehicle ages
-            # fig, ax = plt.subplots()
-            
-            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
-            # ax.set_xlabel('Vehicle Age (years)')
-            # ax.set_ylabel('Frequency')
-            
-            # st.pyplot(fig)
-
-            # st.subheader("Interactive Scatter Plot")
-            # scatter = alt.Chart(df).mark_circle(size=60).encode(
-            #     x='transmission_type',
-            #     y='selling_price',
-            #     # color='fuel_type',
-            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
-            # ).interactive()
-
-            # st.altair_chart(scatter, use_container_width=True)
-
-
-            # # Scatter plot of mileage vs selling price
-            # fig, ax = plt.subplots()
-            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
-            # ax.set_xlabel('Mileage (Kmpl)')
-            # ax.set_ylabel('Selling Price')
-            # st.pyplot(fig)
-
             # Interactive Scatter Plot
             st.subheader("Interactive Scatter Plot")
             scatter = alt.Chart(df).mark_circle(size=60).encode(
@@ -187,13 +159,10 @@ with col3:
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='vehicle_age',
                 y='selling_price',
-                # color='fuel_type',
                 tooltip=['brand', 'model', 'mileage', 'selling_price']
             ).interactive()
 
             st.altair_chart(scatter, use_container_width=True)
-
-# Sample Predictions and File Upload
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
