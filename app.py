@@ -34,7 +34,7 @@ with open('xgboost_model5.pkl', 'rb') as f:
 st.markdown("""
     <style>
     .main {
-      background-image: url('https://your-image-url.com/your-image.jpg');
+      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/021/966/696/small/lot-of-used-car-for-sales-in-stock-with-sky-and-clouds-photo.jpg');
       background-size: cover;
       background-position: center;
     }
