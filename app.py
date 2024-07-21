@@ -9,7 +9,6 @@ from sklearn.metrics import mean_squared_error
 import xgboost as xgb
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import MinMaxScaler
 import altair as alt
 
 # Load data and model
@@ -31,7 +30,7 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Custom CSS for larger dropdowns
+# Custom CSS to enlarge dropdowns (if used) - can be removed if dropdowns are not used
 st.markdown("""
     <style>
     .stSelectbox > div > div:first-child {
@@ -107,11 +106,11 @@ st.header(f"Predicted Selling Price: ₹{int(yd['selling_price'][0])}")
 st.subheader("Note:")
 st.write("The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.")
 
-# Align buttons horizontally at the bottom
+# Buttons at the bottom
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    with st.expander("Download Prediction"):
+    with st.expander("Download Prediction", expanded=False):
         prediction = int(yd['selling_price'][0])
         prediction_df = pd.DataFrame({
             "Brand": [brand],
@@ -122,12 +121,12 @@ with col1:
         st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
 
 with col2:
-    with st.expander("Dataset Summary"):
+    with st.expander("Dataset Summary", expanded=False):
         st.subheader("Dataset Summary")
         st.write(df.describe())
 
 with col3:
-    with st.expander("Visualizations"):
+    with st.expander("Visualizations", expanded=False):
         st.subheader("Data Visualizations")
 
         # Histogram of vehicle ages
