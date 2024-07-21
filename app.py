@@ -11,40 +11,6 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
-# Inject custom CSS for the background
-st.markdown("""
-    <style>
-    .container {
-      width: 100%;
-      height: 100%;
-      --s: 100px; /* control the size */
-      --c1: #f8b195;
-      --c2: #355c7d;
-
-      --_g: var(--c2) 6% 14%, var(--c1) 16% 24%, var(--c2) 26% 34%,
-        var(--c1) 36% 44%, var(--c2) 46% 54%, var(--c1) 56% 64%, var(--c2) 66% 74%,
-        var(--c1) 76% 84%, var(--c2) 86% 94%;
-      background: radial-gradient(
-          100% 100% at 100% 0,
-          var(--c1) 4%,
-          var(--_g),
-          #0008 96%,
-          #0000
-        ),
-        radial-gradient(
-            100% 100% at 0 100%,
-            #0000,
-            #0008 4%,
-            var(--_g),
-            var(--c1) 96%
-          )
-          var(--c1);
-      background-size: var(--s) var(--s);
-    }
-    </style>
-    <div class="container">
-    """, unsafe_allow_html=True)
-
 # Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
 
@@ -160,6 +126,34 @@ with col3:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
+            # # Histogram of vehicle ages
+            # fig, ax = plt.subplots()
+            
+            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
+            # ax.set_xlabel('Vehicle Age (years)')
+            # ax.set_ylabel('Frequency')
+            
+            # st.pyplot(fig)
+
+            # st.subheader("Interactive Scatter Plot")
+            # scatter = alt.Chart(df).mark_circle(size=60).encode(
+            #     x='transmission_type',
+            #     y='selling_price',
+            #     # color='fuel_type',
+            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
+            # ).interactive()
+
+            # st.altair_chart(scatter, use_container_width=True)
+
+
+            # # Scatter plot of mileage vs selling price
+            # fig, ax = plt.subplots()
+            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
+            # ax.set_xlabel('Mileage (Kmpl)')
+            # ax.set_ylabel('Selling Price')
+            # st.pyplot(fig)
+
+            # Interactive Scatter Plot
             st.subheader("Interactive Scatter Plot")
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='mileage',
@@ -174,14 +168,14 @@ with col3:
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='vehicle_age',
                 y='selling_price',
+                # color='fuel_type',
                 tooltip=['brand', 'model', 'mileage', 'selling_price']
             ).interactive()
 
             st.altair_chart(scatter, use_container_width=True)
 
+# Sample Predictions and File Upload
+
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
 st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
-
-# Closing the container div
-st.markdown("</div>", unsafe_allow_html=True)
