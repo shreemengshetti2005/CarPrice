@@ -55,8 +55,8 @@ st.markdown(
       position: absolute;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 100%;
+      width: 500%;
+      height: 500%;
       background: rgba(0, 0, 0, 0.6); /* Adjust opacity to make it darker */
       pointer-events: none;
     }
