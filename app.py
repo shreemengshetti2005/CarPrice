@@ -11,10 +11,61 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
-import google.generativeai as genai
-import os
+# Slide show CSS and HTML
+st.markdown(
+    """
+    <style>
+    .slideshow-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      z-index: -1;
+    }
 
-genai.configure(api_key="AIzaSyAbmk1egr1Vpu-2qksGJKueoEMuGJkO-4Y")
+    .mySlides {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .fade {
+      animation: fade 1.5s infinite;
+    }
+
+    @keyframes fade {
+      from {opacity: .4} 
+      to {opacity: 1}
+    }
+    </style>
+
+    <div class="slideshow-container">
+      <div class="mySlides fade" style="background-image: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+      <div class="mySlides fade" style="background-image: url('https://images.unsplash.com/photo-1465929517729-473000af12ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');"></div>
+    </div>
+
+    <script>
+    let slideIndex = 0;
+    showSlides();
+
+    function showSlides() {
+      let i;
+      let slides = document.getElementsByClassName("mySlides");
+      for (i = 0; i < slides.length; i++) {
+        slides[i].style.display = "none";  
+      }
+      slideIndex++;
+      if (slideIndex > slides.length) {slideIndex = 1}    
+      slides[slideIndex-1].style.display = "block";  
+      setTimeout(showSlides, 5000); // Change image every 5 seconds
+    }
+    </script>
+    """,
+    unsafe_allow_html=True
+)
 
 # Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
@@ -38,57 +89,6 @@ with open('xgboost_model5.pkl', 'rb') as f:
 # Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
-
-# Custom CSS for the slideshow background
-st.markdown("""
-    <style>
-    body {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-    }
-    .slideshow-container {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        top: 0;
-        left: 0;
-        z-index: -1;
-        overflow: hidden;
-    }
-    .mySlides {
-        display: none;
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    </style>
-""", unsafe_allow_html=True)
-
-# Custom HTML for the slideshow
-st.markdown("""
-    <div class="slideshow-container">
-        <img class="mySlides" src="https://images.unsplash.com/photo-1465929517729-473000af12ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-        <img class="mySlides" src="https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
-    </div>
-
-    <script>
-    var slideIndex = 0;
-    showSlides();
-    function showSlides() {
-        var i;
-        var slides = document.getElementsByClassName("mySlides");
-        for (i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";  
-        }
-        slideIndex++;
-        if (slideIndex > slides.length) {slideIndex = 1}    
-        slides[slideIndex-1].style.display = "block";  
-        setTimeout(showSlides, 3000); // Change image every 3 seconds
-    }
-    </script>
-""", unsafe_allow_html=True)
 
 # Prediction Section
 st.title("Enter the details to predict your car's price")
@@ -205,21 +205,19 @@ with col3:
 # Sample Predictions and File Upload
 
 # Sidebar for help
+# st.sidebar.subheader("Need Help?")
+# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+
+# Import Google Generative AI module
+import google.generativeai as genai
+
+genai.configure(api_key="YOUR_GOOGLE_API_KEY")
+
+# Initialize session state for chat history if it doesn't exist
 if 'chat_history' not in st.session_state:
-    lis = []
+    st.session_state.chat_history = []
 
-input=st.sidebar.text_input("Input: ",key="input")
-submit=st.sidebar.button("Ask the question")
-
-if submit and input:
-    response=get_gemini_response(input)
-    # Add user query and response to session state chat history
-    lis.append(("You", input))
-    st.sidebar.subheader("The Response is")
-    for chunk in response:
-        st.sidebar.write(chunk.text)
-        lis.append(("Bot", chunk.text))
-st.sidebar.subheader("The Chat History is")
-    
-for role, text in lis:
-    st.sidebar.write(f"{role}: {text}")
+def get_gemini_response(question):
+    model = genai.GenerativeModel("gemini-pro")
+    chat = model.start_chat(history=[])
+    response
