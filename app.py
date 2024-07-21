@@ -30,12 +30,12 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Inject custom CSS for the solid black background
+# Remove custom CSS for background image
 st.markdown("""
     <style>
     .main {
-      background-color: black;
-      color: white;
+      background-color: white;
+      color: black;
     }
     .content-box {
       background-color: white;
