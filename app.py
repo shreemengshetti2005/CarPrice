@@ -30,7 +30,7 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Inject custom CSS for the background and content box
+# Inject custom CSS for the background
 st.markdown("""
     <style>
     .main {
@@ -59,26 +59,17 @@ st.markdown("""
           )
           var(--c1);
       background-size: var(--s) var(--s);
-      padding: 20px;
-    }
-    .content-box {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# Main content inside the white box
-st.markdown('<div class="content-box">', unsafe_allow_html=True)
-
+# Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
+
+# Prediction Section
 st.title("Enter the details to predict your car's price")
 
-# Prediction form inside the white box
 brand = st.selectbox("Enter brand", (df['brand'].unique()))
 bbbb = df[df['brand'] == brand]
 model = st.selectbox("Enter Model", bbbb['model'].unique())
@@ -188,8 +179,6 @@ with col3:
             ).interactive()
 
             st.altair_chart(scatter, use_container_width=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
