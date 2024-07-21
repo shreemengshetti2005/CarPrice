@@ -11,11 +11,6 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
-import google.generativeai as genai
-import os
-
-genai.configure(api_key="AIzaSyAbmk1egr1Vpu-2qksGJKueoEMuGJkO-4Y")
-
 # Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
 
@@ -35,53 +30,49 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Home Page
-st.title("Know the correct price of your Car!")
-st.write("Use this app to predict the selling price of your car based on various parameters.")
-
-# Custom CSS for the single background image
+# Inject custom CSS for the background image
 st.markdown("""
     <style>
-    body {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-        background: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
-        background-size: cover;
+    .main {
+      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/021/966/696/small/lot-of-used-car-for-sales-in-stock-with-sky-and-clouds-photo.jpg');
+      background-size: cover;
+      background-position: center;
     }
-    .card {
-        background: rgba(255, 255, 255, 0.8);
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        margin-top: 20px;
+    .content-box {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
     }
     </style>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-# Prediction Section
+# Main content inside the white box
+st.markdown('<div class="content-box">', unsafe_allow_html=True)
+
+st.title("Know the correct price of your Car!")
+st.write("Use this app to predict the selling price of your car based on various parameters.")
 st.title("Enter the details to predict your car's price")
 
-with st.container():
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    brand = st.selectbox("Enter brand", (df['brand'].unique()))
-    bbbb = df[df['brand'] == brand]
-    model = st.selectbox("Enter Model", bbbb['model'].unique())
-    aaaa = df[df['model'] == model]
+# Prediction form inside the white box
+brand = st.selectbox("Enter brand", (df['brand'].unique()))
+bbbb = df[df['brand'] == brand]
+model = st.selectbox("Enter Model", bbbb['model'].unique())
+aaaa = df[df['model'] == model]
 
-    aaaa['engine'] = [int(value) for value in aaaa['engine']]
-    aaaa['max_power'] = [int(value) for value in aaaa['max_power']]
+aaaa['engine'] = [int(value) for value in aaaa['engine']]
+aaaa['max_power'] = [int(value) for value in aaaa['max_power']]
 
-    vehicle_age = st.number_input("Enter age", value=9)
-    km_driven = st.number_input("Enter km driven", value=120000)
-    seller_type = 'Individual'
-    fuel_type = st.selectbox("Enter fuel type", df['fuel_type'].unique())
-    transmission_type = st.selectbox("Enter transmission type", df['transmission_type'].unique())
-    mileage = st.number_input("Whats is its mileage (Kmpl)?", value=19.7)
-    engine = st.selectbox("Enter Engine capacity (cc)", (aaaa['engine'].unique()))
-    max_power = st.selectbox("Max power in BHP",(aaaa['max_power'].unique()))
-    seats = st.selectbox("Number of seats",aaaa['seats'].unique())
-    st.markdown('</div>', unsafe_allow_html=True)
+vehicle_age = st.number_input("Enter age", value=9)
+km_driven = st.number_input("Enter km driven", value=120000)
+seller_type = 'Individual'
+fuel_type = st.selectbox("Enter fuel type", df['fuel_type'].unique())
+transmission_type = st.selectbox("Enter transmission type", df['transmission_type'].unique())
+mileage = st.number_input("Whats is its mileage (Kmpl)?", value=19.7)
+engine = st.selectbox("Enter Engine capacity (cc)", (aaaa['engine'].unique()))
+max_power = st.selectbox("Max power in BHP",(aaaa['max_power'].unique()))
+seats = st.selectbox("Number of seats",aaaa['seats'].unique())
 
 if vehicle_age < 0:
     st.error("Vehicle age cannot be negative.")
@@ -140,21 +131,22 @@ with col1:
             "Predicted Selling Price": [prediction]
         })
         csv = prediction_df.to_csv(index=False)
-        expanded_col.download_button(label="Get CSV", data=csv, file_name='prediction.csv', mime='text/csv')
+        expanded_col.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
 
 with col2:
     if st.button("Dataset Summary"):
-        with expanded_col:
+        st.session_state.dataset_summary = not st.session_state.get('dataset_summary', False)
+        if st.session_state.dataset_summary:
             st.subheader("Dataset Summary")
             st.write(df.describe())
 
 with col3:
     if st.button("Visualizations"):
-        with expanded_col:
+        st.session_state.visualizations = not st.session_state.get('visualizations', False)
+        if st.session_state.visualizations:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
-            # Interactive Scatter Plot
             st.subheader("Interactive Scatter Plot")
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='mileage',
@@ -174,24 +166,8 @@ with col3:
 
             st.altair_chart(scatter, use_container_width=True)
 
-# Sample Predictions and File Upload
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Sidebar for help
-if 'chat_history' not in st.session_state:
-    lis = []
-
-input = st.sidebar.text_input("Input: ", key="input")
-submit = st.sidebar.button("Ask the question")
-
-if submit and input:
-    response = get_gemini_response(input)
-    # Add user query and response to session state chat history
-    lis.append(("You", input))
-    st.sidebar.subheader("The Response is")
-    for chunk in response:
-        st.sidebar.write(chunk.text)
-        lis.append(("Bot", chunk.text))
-st.sidebar.subheader("The Chat History is")
-
-for role, text in lis:
-    st.sidebar.write(f"{role}: {text}")
+st.sidebar.subheader("Need Help?")
+st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
