@@ -98,25 +98,26 @@ st.header(f"Predicted Selling Price: ₹{int(yd['selling_price'][0])}")
 st.subheader("Note:")
 st.write("The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.")
 
-if st.button('Download Prediction'):
-    prediction = int(yd['selling_price'][0])
-    prediction_df = pd.DataFrame({
-        "Brand": [brand],
-        "Model": [model],
-        "Predicted Selling Price": [prediction]
-    })
-    csv = prediction_df.to_csv(index=False)
-    st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
-
 # Align buttons horizontally at the bottom
 col1, col2, col3 = st.columns(3)
 
 with col1:
+    if st.button('Download Prediction'):
+        prediction = int(yd['selling_price'][0])
+        prediction_df = pd.DataFrame({
+            "Brand": [brand],
+            "Model": [model],
+            "Predicted Selling Price": [prediction]
+        })
+        csv = prediction_df.to_csv(index=False)
+        st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
+
+with col2:
     if st.button("Dataset Summary"):
         st.subheader("Dataset Summary")
         st.write(df.describe())
 
-with col2:
+with col3:
     if st.button("Visualizations"):
         st.subheader("Data Visualizations")
 
@@ -143,6 +144,19 @@ with col2:
 
         st.altair_chart(scatter, use_container_width=True)
 
-with col3:
-    st.subheader("Need Help?")
-    st.info("If you have any questions or need assistance, please contact our support team.")
+# Sample Predictions and File Upload
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+if uploaded_file is not None:
+    custom_df = pd.read_csv(uploaded_file)
+    st.write(custom_df.head())
+    # Process the custom_df as needed
+
+st.subheader("Sample Predictions")
+sample_data = df.sample(5)
+sample_predictions = loaded_model.predict(xgb.DMatrix(scaler.transform(sample_data)))
+sample_data['predicted_selling_price'] = scaler_y.inverse_transform(pd.DataFrame(sample_predictions))
+st.write(sample_data[['brand', 'model', 'vehicle_age', 'km_driven', 'mileage', 'predicted_selling_price']])
+
+# Sidebar for help
+st.sidebar.subheader("Need Help?")
+st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
