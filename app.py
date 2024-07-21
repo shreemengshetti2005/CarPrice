@@ -35,37 +35,6 @@ with open('xgboost_model5.pkl', 'rb') as f:
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
 
-# Icons for navigation
-if st.button("Dataset Summary"):
-    st.subheader("Dataset Summary")
-    st.write(df.describe())
-
-if st.button("Visualizations"):
-    st.subheader("Data Visualizations")
-
-    # Histogram of vehicle ages
-    fig, ax = plt.subplots()
-    ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
-    st.pyplot(fig)
-
-    # Scatter plot of mileage vs selling price
-    fig, ax = plt.subplots()
-    ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
-    ax.set_xlabel('Mileage (Kmpl)')
-    ax.set_ylabel('Selling Price')
-    st.pyplot(fig)
-
-    # Interactive Scatter Plot
-    st.subheader("Interactive Scatter Plot")
-    scatter = alt.Chart(df).mark_circle(size=60).encode(
-        x='mileage',
-        y='selling_price',
-        color='fuel_type',
-        tooltip=['brand', 'model', 'mileage', 'selling_price']
-    ).interactive()
-
-    st.altair_chart(scatter, use_container_width=True)
-
 # Prediction Section
 st.title("Enter the details to predict your car's price")
 
@@ -139,6 +108,49 @@ if st.button('Download Prediction'):
     csv = prediction_df.to_csv(index=False)
     st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
 
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+if uploaded_file is not None:
+    custom_df = pd.read_csv(uploaded_file)
+    st.write(custom_df.head())
+    # Process the custom_df as needed
+
+st.subheader("Sample Predictions")
+sample_data = df.sample(5)
+sample_predictions = loaded_model.predict(xgb.DMatrix(scaler.transform(sample_data)))
+sample_data['predicted_selling_price'] = scaler_y.inverse_transform(pd.DataFrame(sample_predictions))
+st.write(sample_data[['brand', 'model', 'vehicle_age', 'km_driven', 'mileage', 'predicted_selling_price']])
+
+# Dataset Summary Button
+if st.button("Dataset Summary"):
+    st.subheader("Dataset Summary")
+    st.write(df.describe())
+
+# Visualizations Button
+if st.button("Visualizations"):
+    st.subheader("Data Visualizations")
+
+    # Histogram of vehicle ages
+    fig, ax = plt.subplots()
+    ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
+    st.pyplot(fig)
+
+    # Scatter plot of mileage vs selling price
+    fig, ax = plt.subplots()
+    ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
+    ax.set_xlabel('Mileage (Kmpl)')
+    ax.set_ylabel('Selling Price')
+    st.pyplot(fig)
+
+    # Interactive Scatter Plot
+    st.subheader("Interactive Scatter Plot")
+    scatter = alt.Chart(df).mark_circle(size=60).encode(
+        x='mileage',
+        y='selling_price',
+        color='fuel_type',
+        tooltip=['brand', 'model', 'mileage', 'selling_price']
+    ).interactive()
+
+    st.altair_chart(scatter, use_container_width=True)
 
 st.sidebar.subheader("Need Help?")
 st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
