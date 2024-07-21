@@ -53,8 +53,8 @@ st.markdown(
     .main::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 10;
+      left: 10;
       width: 10000%;
       height: 10000%;
       background: rgba(0, 0, 0, 0.71); /* Adjust opacity to make it darker */
