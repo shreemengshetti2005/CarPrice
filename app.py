@@ -148,6 +148,15 @@ col1, col2, col3 = st.columns(3)
 expanded_col = st.container()
 
 with col1:
+    # prediction = int(yd['selling_price'][0])
+    # prediction_df = pd.DataFrame({
+    #     "Brand": [brand],
+    #     "Model": [model],
+    #     "Predicted Selling Price": [prediction]
+    # })
+    # csv = prediction_df.to_csv(index=False)
+    # expanded_col.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
+    
     if st.button("Download Prediction"):
         prediction = int(yd['selling_price'][0])
         prediction_df = pd.DataFrame({
@@ -156,22 +165,48 @@ with col1:
             "Predicted Selling Price": [prediction]
         })
         csv = prediction_df.to_csv(index=False)
-        expanded_col.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
+        expanded_col.download_button(label="Get CSV", data=csv, file_name='prediction.csv', mime='text/csv')
 
 with col2:
     if st.button("Dataset Summary"):
-        st.session_state.dataset_summary = not st.session_state.get('dataset_summary', False)
-        if st.session_state.dataset_summary:
+        with expanded_col:
             st.subheader("Dataset Summary")
             st.write(df.describe())
 
 with col3:
     if st.button("Visualizations"):
-        st.session_state.visualizations = not st.session_state.get('visualizations', False)
-        if st.session_state.visualizations:
+        with expanded_col:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
+            # # Histogram of vehicle ages
+            # fig, ax = plt.subplots()
+            
+            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
+            # ax.set_xlabel('Vehicle Age (years)')
+            # ax.set_ylabel('Frequency')
+            
+            # st.pyplot(fig)
+
+            # st.subheader("Interactive Scatter Plot")
+            # scatter = alt.Chart(df).mark_circle(size=60).encode(
+            #     x='transmission_type',
+            #     y='selling_price',
+            #     # color='fuel_type',
+            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
+            # ).interactive()
+
+            # st.altair_chart(scatter, use_container_width=True)
+
+
+            # # Scatter plot of mileage vs selling price
+            # fig, ax = plt.subplots()
+            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
+            # ax.set_xlabel('Mileage (Kmpl)')
+            # ax.set_ylabel('Selling Price')
+            # st.pyplot(fig)
+
+            # Interactive Scatter Plot
             st.subheader("Interactive Scatter Plot")
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='mileage',
@@ -186,6 +221,7 @@ with col3:
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='vehicle_age',
                 y='selling_price',
+                # color='fuel_type',
                 tooltip=['brand', 'model', 'mileage', 'selling_price']
             ).interactive()
 
