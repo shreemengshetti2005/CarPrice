@@ -11,20 +11,10 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
-# flagg = False
-    
-# if flagg == False:
-#     lis = []
-#     flagg = True
-
 import google.generativeai as genai
 import os
 
 genai.configure(api_key="AIzaSyAbmk1egr1Vpu-2qksGJKueoEMuGJkO-4Y")
-
-# model = genai.GenerativeModel('gemini-1.5-flash')
-
-
 
 # Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
@@ -48,6 +38,57 @@ with open('xgboost_model5.pkl', 'rb') as f:
 # Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
+
+# Custom CSS for the slideshow background
+st.markdown("""
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+    .slideshow-container {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        overflow: hidden;
+    }
+    .mySlides {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Custom HTML for the slideshow
+st.markdown("""
+    <div class="slideshow-container">
+        <img class="mySlides" src="https://images.unsplash.com/photo-1465929517729-473000af12ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+        <img class="mySlides" src="https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+    </div>
+
+    <script>
+    var slideIndex = 0;
+    showSlides();
+    function showSlides() {
+        var i;
+        var slides = document.getElementsByClassName("mySlides");
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";  
+        }
+        slideIndex++;
+        if (slideIndex > slides.length) {slideIndex = 1}    
+        slides[slideIndex-1].style.display = "block";  
+        setTimeout(showSlides, 3000); // Change image every 3 seconds
+    }
+    </script>
+""", unsafe_allow_html=True)
 
 # Prediction Section
 st.title("Enter the details to predict your car's price")
@@ -119,15 +160,6 @@ col1, col2, col3 = st.columns(3)
 expanded_col = st.container()
 
 with col1:
-    # prediction = int(yd['selling_price'][0])
-    # prediction_df = pd.DataFrame({
-    #     "Brand": [brand],
-    #     "Model": [model],
-    #     "Predicted Selling Price": [prediction]
-    # })
-    # csv = prediction_df.to_csv(index=False)
-    # expanded_col.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
-    
     if st.button("Download Prediction"):
         prediction = int(yd['selling_price'][0])
         prediction_df = pd.DataFrame({
@@ -150,33 +182,6 @@ with col3:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
-            # # Histogram of vehicle ages
-            # fig, ax = plt.subplots()
-            
-            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
-            # ax.set_xlabel('Vehicle Age (years)')
-            # ax.set_ylabel('Frequency')
-            
-            # st.pyplot(fig)
-
-            # st.subheader("Interactive Scatter Plot")
-            # scatter = alt.Chart(df).mark_circle(size=60).encode(
-            #     x='transmission_type',
-            #     y='selling_price',
-            #     # color='fuel_type',
-            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
-            # ).interactive()
-
-            # st.altair_chart(scatter, use_container_width=True)
-
-
-            # # Scatter plot of mileage vs selling price
-            # fig, ax = plt.subplots()
-            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
-            # ax.set_xlabel('Mileage (Kmpl)')
-            # ax.set_ylabel('Selling Price')
-            # st.pyplot(fig)
-
             # Interactive Scatter Plot
             st.subheader("Interactive Scatter Plot")
             scatter = alt.Chart(df).mark_circle(size=60).encode(
@@ -192,7 +197,6 @@ with col3:
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='vehicle_age',
                 y='selling_price',
-                # color='fuel_type',
                 tooltip=['brand', 'model', 'mileage', 'selling_price']
             ).interactive()
 
@@ -201,31 +205,6 @@ with col3:
 # Sample Predictions and File Upload
 
 # Sidebar for help
-# st.sidebar.subheader("Need Help?")
-# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
-
-# import streamlit as st
-# import os
-# import google.generativeai as genai
-
-# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
-
-## function to load Gemini Pro model and get repsonses
-model=genai.GenerativeModel("gemini-pro") 
-chat = model.start_chat(history=[])
-
-def get_gemini_response(question):
-    
-    response=chat.send_message(question,stream=True)
-    return response
-
-##initialize our streamlit app
-
-# stset_page_config(page_title="Q&A Demo")
-
-# st.sidebar("Gemini LLM Application")
-
-# Initialize session state for chat history if it doesn't exist
 if 'chat_history' not in st.session_state:
     lis = []
 
