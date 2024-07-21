@@ -112,7 +112,7 @@ with col1:
             "Predicted Selling Price": [prediction]
         })
         csv = prediction_df.to_csv(index=False)
-        expanded_col.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
+        expanded_col.download_button(label="Get CSV", data=csv, file_name='prediction.csv', mime='text/csv')
 
 with col2:
     if st.button("Dataset Summary"):
