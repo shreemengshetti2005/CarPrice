@@ -11,6 +11,9 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
+import google.generativeai as genai
+genai.configure(api_key="AIzaSyAbmk1egr1Vpu-2qksGJKueoEMuGJkO-4Y")
+
 # Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
 
@@ -30,12 +33,13 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
+# Inject custom CSS for the background image
 # Inject custom CSS for the background slideshow
 st.markdown("""
     <style>
     @keyframes slide {
         0% { background: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed; }
-        50% { background:https://images.unsplash.com/photo-1469050061383-f5fd48f3205d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D; }
+        50% { background: black; }
         100% { background: url('https://images.unsplash.com/photo-1465929517729-473000af12ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed; }
     }
 
@@ -53,10 +57,6 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-
-
-
-
 
 
 # Main content inside the white box
@@ -179,6 +179,54 @@ with col3:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
+
+
+
 # Sidebar for help
-st.sidebar.subheader("Need Help?")
-st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+# st.sidebar.subheader("Need Help?")
+# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+
+# import streamlit as st
+# import os
+# import google.generativeai as genai
+
+# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
+## function to load Gemini Pro model and get repsonses
+model=genai.GenerativeModel("gemini-pro") 
+chat = model.start_chat(history=[])
+
+def get_gemini_response(question):
+    
+    response=chat.send_message(question,stream=True)
+    return response
+
+##initialize our streamlit app
+
+# stset_page_config(page_title="Q&A Demo")
+
+# st.sidebar("Gemini LLM Application")
+
+# Initialize session state for chat history if it doesn't exist
+if 'chat_history' not in st.session_state:
+    lis = []
+
+input=st.sidebar.text_input("Input: ",key="input")
+submit=st.sidebar.button("Ask the question")
+
+if submit and input:
+    response=get_gemini_response(input)
+    # Add user query and response to session state chat history
+    lis.append(("You", input))
+    st.sidebar.subheader("The Response is")
+    for chunk in response:
+        st.sidebar.write(chunk.text)
+        lis.append(("Bot", chunk.text))
+st.sidebar.subheader("The Chat History is")
+    
+for role, text in lis:
+    st.sidebar.write(f"{role}: {text}")
+
+# # Sidebar for help
+# st.sidebar.subheader("Need Help?")
+# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
