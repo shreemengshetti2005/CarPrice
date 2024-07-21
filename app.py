@@ -30,15 +30,6 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Custom CSS to enlarge dropdowns (if used) - can be removed if dropdowns are not used
-st.markdown("""
-    <style>
-    .stSelectbox > div > div:first-child {
-        font-size: 20px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
 # Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
@@ -110,7 +101,7 @@ st.write("The predicted price is based on the provided information and market tr
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    with st.expander("Download Prediction", expanded=False):
+    if st.button("Download Prediction"):
         prediction = int(yd['selling_price'][0])
         prediction_df = pd.DataFrame({
             "Brand": [brand],
@@ -121,12 +112,12 @@ with col1:
         st.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
 
 with col2:
-    with st.expander("Dataset Summary", expanded=False):
+    if st.button("Dataset Summary"):
         st.subheader("Dataset Summary")
         st.write(df.describe())
 
 with col3:
-    with st.expander("Visualizations", expanded=False):
+    if st.button("Visualizations"):
         st.subheader("Data Visualizations")
 
         # Histogram of vehicle ages
