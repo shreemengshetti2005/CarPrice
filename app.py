@@ -11,8 +11,8 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
-import google.generativeai as genai
-genai.configure(api_key="AIzaSyAbmk1egr1Vpu-2qksGJKueoEMuGJkO-4Y")
+import google.generativeai as gen_ai
+
 
 # Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
@@ -235,50 +235,49 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 
 # Sidebar for help
-# st.sidebar.subheader("Need Help?")
-# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+st.sidebar.subheader("Need Help?")
+st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
 
-# import streamlit as st
-# import os
-# import google.generativeai as genai
+GOOGLE_API_KEY = "AIzaSyCJdcmwF7exDMH0ZvEQl3flYv2DBHgjVqQ"
 
-# genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+# Set up Google Gemini-Pro AI model
+gen_ai.configure(api_key=GOOGLE_API_KEY)
+model = gen_ai.GenerativeModel('gemini-pro')
 
-## function to load Gemini Pro model and get repsonses
-model=genai.GenerativeModel("gemini-pro") 
-chat = model.start_chat(history=[])
 
-def get_gemini_response(question):
-    
-    response=chat.send_message(question,stream=True)
-    return response
+# Function to translate roles between Gemini-Pro and Streamlit terminology
+def translate_role_for_streamlit(user_role):
+    if user_role == "model":
+        return "assistant"
+    else:
+        return user_role
 
-##initialize our streamlit app
 
-# stset_page_config(page_title="Q&A Demo")
+# Initialize chat session in Streamlit if not already present
+if "chat_session" not in st.session_state:
+    st.session_state.chat_session = model.start_chat(history=[])
 
-# st.sidebar("Gemini LLM Application")
 
-# Initialize session state for chat history if it doesn't exist
-if 'chat_history' not in st.session_state:
-    lis = []
+# # Display the chatbot's title on the page
+# st.title("🤖 Gemini Pro - ChatBot")
 
-input=st.sidebar.text_input("Input: ",key="input")
-submit=st.sidebar.button("Ask the question")
+# Display the chat history
+for message in st.session_state.chat_session.history:
+    # with st.(translate_role_for_streamlit(message.role)):
+    st.sidebar.markdown(message.parts[0].text)
 
-if submit and input:
-    response=get_gemini_response(input)
-    # Add user query and response to session state chat history
-    lis.append(("You", input))
-    st.sidebar.subheader("The Response is")
-    for chunk in response:
-        st.sidebar.write(chunk.text)
-        lis.append(("Bot", chunk.text))
-st.sidebar.subheader("The Chat History is")
-    
-for role, text in lis:
-    st.sidebar.write(f"{role}: {text}")
+# Input field for user's message
+user_prompt = st.sidebar.text_input("Ask Gemini-Pro...")
+if user_prompt:
+    # Add user's message to chat and display it
+    st.sidebar.write("Me:")
+    st.sidebar.markdown(user_prompt)
 
-# # Sidebar for help
-# st.sidebar.subheader("Need Help?")
-# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+    # Send user's message to Gemini-Pro and get the response
+    gemini_response = st.session_state.chat_session.send_message(user_prompt)
+
+    # # Display Gemini-Pro's response
+    # with st.write("assistant"):
+    #     # st.markdown(gemini_response.text)
+    st.sidebar.write("Bot:")
+    st.sidebar.markdown(gemini_response.text)
