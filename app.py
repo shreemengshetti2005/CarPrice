@@ -135,18 +135,44 @@ with col1:
 
 with col2:
     if st.button("Dataset Summary"):
-        st.session_state.dataset_summary = not st.session_state.get('dataset_summary', False)
-        if st.session_state.dataset_summary:
+        with expanded_col:
             st.subheader("Dataset Summary")
             st.write(df.describe())
 
 with col3:
     if st.button("Visualizations"):
-        st.session_state.visualizations = not st.session_state.get('visualizations', False)
-        if st.session_state.visualizations:
+        with expanded_col:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
+            # # Histogram of vehicle ages
+            # fig, ax = plt.subplots()
+            
+            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
+            # ax.set_xlabel('Vehicle Age (years)')
+            # ax.set_ylabel('Frequency')
+            
+            # st.pyplot(fig)
+
+            # st.subheader("Interactive Scatter Plot")
+            # scatter = alt.Chart(df).mark_circle(size=60).encode(
+            #     x='transmission_type',
+            #     y='selling_price',
+            #     # color='fuel_type',
+            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
+            # ).interactive()
+
+            # st.altair_chart(scatter, use_container_width=True)
+
+
+            # # Scatter plot of mileage vs selling price
+            # fig, ax = plt.subplots()
+            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
+            # ax.set_xlabel('Mileage (Kmpl)')
+            # ax.set_ylabel('Selling Price')
+            # st.pyplot(fig)
+
+            # Interactive Scatter Plot
             st.subheader("Interactive Scatter Plot")
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='mileage',
@@ -161,12 +187,13 @@ with col3:
             scatter = alt.Chart(df).mark_circle(size=60).encode(
                 x='vehicle_age',
                 y='selling_price',
+                # color='fuel_type',
                 tooltip=['brand', 'model', 'mileage', 'selling_price']
             ).interactive()
 
             st.altair_chart(scatter, use_container_width=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+# Sample Predictions and File Upload
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
