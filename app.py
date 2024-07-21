@@ -57,7 +57,7 @@ st.markdown(
       left: 0;
       width: 500%;
       height: 500%;
-      background: rgba(0, 0, 0, 0.699); /* Adjust opacity to make it darker */
+      background: rgba(0, 0, 0, 0.71); /* Adjust opacity to make it darker */
       pointer-events: none;
     }
     
