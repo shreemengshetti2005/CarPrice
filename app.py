@@ -61,7 +61,7 @@ st.markdown("""
 
 
 # Main content inside the white box
-st.markdown('<div class="content-box">', unsafe_allow_html=True)
+
 
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
