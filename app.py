@@ -30,48 +30,30 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Inject custom CSS for the background image
-# Inject custom CSS for the background slideshow with blur effect
-# Inject custom CSS for the background slideshow with blur effect
+# Inject custom CSS for the background slideshow
 st.markdown("""
     <style>
     @keyframes slide {
-        0% { background-image: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-        50% { background-image: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
-        100% { background-image: url('https://images.unsplash.com/photo-1465929517729-473000af12ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); }
+        0% { background: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed; }
+        50% { background: black; }
+        100% { background: url('https://images.unsplash.com/photo-1465929517729-473000af12ce?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed; }
     }
 
     .main {
-      position: relative;
-      overflow: hidden;
-      background-color: black;
-    }
-    
-    .main::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('https://images.unsplash.com/photo-1488954048779-4d9263af2653?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      animation: slide 10s infinite;
       background-size: cover;
-      filter: blur(8px);
-      animation: slide 20s infinite;
-      z-index: -1;
+      background-position: center;
     }
-    
     .content-box {
       background-color: white;
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
-      position: relative;
-      z-index: 1;
     }
     </style>
     """, unsafe_allow_html=True)
+
 
 
 
