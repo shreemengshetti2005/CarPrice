@@ -144,19 +144,6 @@ with col3:
 
         st.altair_chart(scatter, use_container_width=True)
 
-# Sample Predictions and File Upload
-uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
-if uploaded_file is not None:
-    custom_df = pd.read_csv(uploaded_file)
-    st.write(custom_df.head())
-    # Process the custom_df as needed
-
-st.subheader("Sample Predictions")
-sample_data = df.sample(5)
-sample_predictions = loaded_model.predict(xgb.DMatrix(scaler.transform(sample_data)))
-sample_data['predicted_selling_price'] = scaler_y.inverse_transform(pd.DataFrame(sample_predictions))
-st.write(sample_data[['brand', 'model', 'vehicle_age', 'km_driven', 'mileage', 'predicted_selling_price']])
-
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
 st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
