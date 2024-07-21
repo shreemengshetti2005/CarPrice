@@ -30,9 +30,124 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
+# Apply custom CSS for black background and card styling
+st.markdown(
+    """
+    <style>
+    body {
+        background-color: black;
+        color: white;
+    }
+    .stButton button {
+        background-color: #00cc00;
+        color: black;
+    }
+    .stButton button:hover {
+        background-color: #00ff00;
+        color: black;
+    }
+    .card {
+        position: relative;
+        width: 100%;
+        height: auto;
+        background-color: #000;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        padding: 12px;
+        gap: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid #e81cff;
+    }
+
+    .card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        left: -5px;
+        margin: auto;
+        width: calc(100% + 10px);
+        height: calc(100% + 10px);
+        border-radius: 10px;
+        background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100% );
+        z-index: -10;
+        pointer-events: none;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .card::after {
+        content: "";
+        z-index: -1;
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100% );
+        transform: translate3d(0, 0, 0) scale(0.95);
+        filter: blur(20px);
+    }
+
+    .heading {
+        font-size: 20px;
+        text-transform: capitalize;
+        font-weight: 700;
+    }
+
+    .card p:not(.heading) {
+        font-size: 14px;
+    }
+
+    .card p:last-child {
+        color: #e81cff;
+        font-weight: 600;
+    }
+
+    .card:hover::after {
+        filter: blur(30px);
+    }
+
+    .card:hover::before {
+        transform: rotate(-90deg) scaleX(1.34) scaleY(0.77);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
+
+# Define initial layout with three columns for icons
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.button("Dataset Summary"):
+        st.subheader("Dataset Summary")
+        st.write(df.describe())
+
+with col2:
+    if st.button("Visualizations"):
+        st.subheader("Data Visualizations")
+        st.write('Visualization of the data we used for model training')
+
+        st.subheader("Interactive Scatter Plot")
+        scatter = alt.Chart(df).mark_circle(size=60).encode(
+            x='mileage',
+            y='selling_price',
+            color='fuel_type',
+            tooltip=['brand', 'model', 'mileage', 'selling_price']
+        ).interactive()
+        st.altair_chart(scatter, use_container_width=True)
+
+        scatter = alt.Chart(df).mark_circle(size=60).encode(
+            x='vehicle_age',
+            y='selling_price',
+            tooltip=['brand', 'model', 'mileage', 'selling_price']
+        ).interactive()
+        st.altair_chart(scatter, use_container_width=True)
+
+with col3:
+    st.write("Predict your car's price below")
 
 # Prediction Section
 st.title("Enter the details to predict your car's price")
@@ -92,89 +207,15 @@ yd = scaler_y.inverse_transform(y)
 yd = pd.DataFrame(yd)
 yd.columns = ['selling_price']
 
-# Display prediction result
-st.header(f"Predicted Selling Price: ₹{int(yd['selling_price'][0])}")
-st.subheader("Note:")
-st.write("The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.")
-
-# Define initial layout with three columns
-col1, col2, col3 = st.columns(3)
-
-# Container for expanded content
-expanded_col = st.container()
-
-with col1:
-    if st.button("Download Prediction"):
-        prediction = int(yd['selling_price'][0])
-        prediction_df = pd.DataFrame({
-            "Brand": [brand],
-            "Model": [model],
-            "Predicted Selling Price": [prediction]
-        })
-        csv = prediction_df.to_csv(index=False)
-        expanded_col.download_button(label="Get CSV", data=csv, file_name='prediction.csv', mime='text/csv')
-
-with col2:
-    if st.button("Dataset Summary"):
-        with expanded_col:
-            st.subheader("Dataset Summary")
-            st.write(df.describe())
-
-with col3:
-    if st.button("Visualizations"):
-        with expanded_col:
-            st.subheader("Data Visualizations")
-            st.write('Visualization of the data we used for model training')
-
-            # # Histogram of vehicle ages
-            # fig, ax = plt.subplots()
-            
-            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
-            # ax.set_xlabel('Vehicle Age (years)')
-            # ax.set_ylabel('Frequency')
-            
-            # st.pyplot(fig)
-
-            # st.subheader("Interactive Scatter Plot")
-            # scatter = alt.Chart(df).mark_circle(size=60).encode(
-            #     x='transmission_type',
-            #     y='selling_price',
-            #     # color='fuel_type',
-            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
-            # ).interactive()
-
-            # st.altair_chart(scatter, use_container_width=True)
-
-
-            # # Scatter plot of mileage vs selling price
-            # fig, ax = plt.subplots()
-            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
-            # ax.set_xlabel('Mileage (Kmpl)')
-            # ax.set_ylabel('Selling Price')
-            # st.pyplot(fig)
-
-            # Interactive Scatter Plot
-            st.subheader("Interactive Scatter Plot")
-            scatter = alt.Chart(df).mark_circle(size=60).encode(
-                x='mileage',
-                y='selling_price',
-                color='fuel_type',
-                tooltip=['brand', 'model', 'mileage', 'selling_price']
-            ).interactive()
-
-            st.altair_chart(scatter, use_container_width=True)
-
-            st.subheader("Interactive Scatter Plot")
-            scatter = alt.Chart(df).mark_circle(size=60).encode(
-                x='vehicle_age',
-                y='selling_price',
-                # color='fuel_type',
-                tooltip=['brand', 'model', 'mileage', 'selling_price']
-            ).interactive()
-
-            st.altair_chart(scatter, use_container_width=True)
-
-# Sample Predictions and File Upload
+# Display prediction result in card
+st.markdown(f"""
+    <div class="card">
+        <p class="heading">Predicted Selling Price</p>
+        <p>₹{int(yd['selling_price'][0])}</p>
+        <p>Note:</p>
+        <p>The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
