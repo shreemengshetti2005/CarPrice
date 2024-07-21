@@ -30,7 +30,7 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-# Inject custom CSS for the background and content box
+# Inject custom CSS for the background
 st.markdown("""
     <style>
     .main {
@@ -60,25 +60,15 @@ st.markdown("""
           var(--c1);
       background-size: var(--s) var(--s);
     }
-
-    .content-box {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-    }
     </style>
     """, unsafe_allow_html=True)
 
-st.markdown('<div class="content-box">', unsafe_allow_html=True)
+# Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
-st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="content-box">', unsafe_allow_html=True)
+# Prediction Section
 st.title("Enter the details to predict your car's price")
-st.markdown('</div>', unsafe_allow_html=True)
 
 brand = st.selectbox("Enter brand", (df['brand'].unique()))
 bbbb = df[df['brand'] == brand]
@@ -136,11 +126,9 @@ yd = pd.DataFrame(yd)
 yd.columns = ['selling_price']
 
 # Display prediction result
-st.markdown('<div class="content-box">', unsafe_allow_html=True)
 st.header(f"Predicted Selling Price: ₹{int(yd['selling_price'][0])}")
 st.subheader("Note:")
 st.write("The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.")
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Define initial layout with three columns
 col1, col2, col3 = st.columns(3)
@@ -163,16 +151,13 @@ with col2:
     if st.button("Dataset Summary"):
         st.session_state.dataset_summary = not st.session_state.get('dataset_summary', False)
         if st.session_state.dataset_summary:
-            st.markdown('<div class="content-box">', unsafe_allow_html=True)
             st.subheader("Dataset Summary")
             st.write(df.describe())
-            st.markdown('</div>', unsafe_allow_html=True)
 
 with col3:
     if st.button("Visualizations"):
         st.session_state.visualizations = not st.session_state.get('visualizations', False)
         if st.session_state.visualizations:
-            st.markdown('<div class="content-box">', unsafe_allow_html=True)
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
@@ -194,7 +179,6 @@ with col3:
             ).interactive()
 
             st.altair_chart(scatter, use_container_width=True)
-            st.markdown('</div>', unsafe_allow_html=True)
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
