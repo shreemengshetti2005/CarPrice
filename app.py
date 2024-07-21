@@ -47,7 +47,7 @@ st.markdown("""
       animation: slide 10s infinite;
       background-size: cover;
       background-position: center;
-      filter: blur(20px);
+      filter: blur(5px);
     }
     .content-box {
       background-color: white;
