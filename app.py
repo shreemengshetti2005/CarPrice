@@ -11,29 +11,10 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.preprocessing import StandardScaler
 import altair as alt
 
-# Load data and model
-df = pd.read_csv('cardekho_dataset.csv')
-
-encoder = OneHotEncoder()
-df_encoded = encoder.fit_transform(df[['brand','model', 'seller_type', 'fuel_type', 'transmission_type']])
-odf = pd.DataFrame.sparse.from_spmatrix(df_encoded)
-dff = df[['vehicle_age', 'km_driven', 'mileage', 'engine', 'max_power', 'selling_price']]
-cdf = pd.concat([odf, dff], axis=1)
-cdf.columns = cdf.columns.astype(str)
-
-scaler = StandardScaler()
-scaler.fit(cdf)
-
-scaler_y = StandardScaler()
-scaler_y.fit(df[['selling_price']])
-
-with open('xgboost_model5.pkl', 'rb') as f:
-    loaded_model = pickle.load(f)
-
 # Inject custom CSS for the background
 st.markdown("""
     <style>
-    .main {
+    .container {
       width: 100%;
       height: 100%;
       --s: 100px; /* control the size */
@@ -61,7 +42,27 @@ st.markdown("""
       background-size: var(--s) var(--s);
     }
     </style>
+    <div class="container">
     """, unsafe_allow_html=True)
+
+# Load data and model
+df = pd.read_csv('cardekho_dataset.csv')
+
+encoder = OneHotEncoder()
+df_encoded = encoder.fit_transform(df[['brand','model', 'seller_type', 'fuel_type', 'transmission_type']])
+odf = pd.DataFrame.sparse.from_spmatrix(df_encoded)
+dff = df[['vehicle_age', 'km_driven', 'mileage', 'engine', 'max_power', 'selling_price']]
+cdf = pd.concat([odf, dff], axis=1)
+cdf.columns = cdf.columns.astype(str)
+
+scaler = StandardScaler()
+scaler.fit(cdf)
+
+scaler_y = StandardScaler()
+scaler_y.fit(df[['selling_price']])
+
+with open('xgboost_model5.pkl', 'rb') as f:
+    loaded_model = pickle.load(f)
 
 # Home Page
 st.title("Know the correct price of your Car!")
@@ -149,15 +150,13 @@ with col1:
 
 with col2:
     if st.button("Dataset Summary"):
-        st.session_state.dataset_summary = not st.session_state.get('dataset_summary', False)
-        if st.session_state.dataset_summary:
+        with expanded_col:
             st.subheader("Dataset Summary")
             st.write(df.describe())
 
 with col3:
     if st.button("Visualizations"):
-        st.session_state.visualizations = not st.session_state.get('visualizations', False)
-        if st.session_state.visualizations:
+        with expanded_col:
             st.subheader("Data Visualizations")
             st.write('Visualization of the data we used for model training')
 
@@ -183,3 +182,6 @@ with col3:
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
 st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+
+# Closing the container div
+st.markdown("</div>", unsafe_allow_html=True)
