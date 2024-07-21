@@ -47,7 +47,7 @@ st.markdown(
 
     .main {
       position: relative;
-      animation: slide 10s infinite;
+      animation: slide 20s infinite;
       background-size: cover;
       background-position: center;
     }
