@@ -12,13 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import MinMaxScaler
 import altair as alt
 
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Dataset Summary", "Visualizations", "Predict Price"])
-
-if page == "Home":
-    st.title("Welcome to the Car Price Prediction App")
-    st.write("Use this app to predict the selling price of your car based on various parameters.")
-
+# Load data and model
 df = pd.read_csv('cardekho_dataset.csv')
 
 encoder = OneHotEncoder()
@@ -31,31 +25,37 @@ cdf.columns = cdf.columns.astype(str)
 scaler = StandardScaler()
 scaler.fit(cdf)
 
-# Initialize StandardScaler
 scaler_y = StandardScaler()
 scaler_y.fit(df[['selling_price']])
 
-# Load the model from file
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
-if page == "Dataset Summary":
+# Home Page
+st.title("Know the correct price of your Car!")
+st.write("Use this app to predict the selling price of your car based on various parameters.")
+
+# Icons for navigation
+if st.button("Dataset Summary"):
     st.subheader("Dataset Summary")
     st.write(df.describe())
 
-elif page == "Visualizations":
+if st.button("Visualizations"):
     st.subheader("Data Visualizations")
 
+    # Histogram of vehicle ages
     fig, ax = plt.subplots()
     ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
     st.pyplot(fig)
 
+    # Scatter plot of mileage vs selling price
     fig, ax = plt.subplots()
     ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
     ax.set_xlabel('Mileage (Kmpl)')
     ax.set_ylabel('Selling Price')
     st.pyplot(fig)
 
+    # Interactive Scatter Plot
     st.subheader("Interactive Scatter Plot")
     scatter = alt.Chart(df).mark_circle(size=60).encode(
         x='mileage',
@@ -66,8 +66,8 @@ elif page == "Visualizations":
 
     st.altair_chart(scatter, use_container_width=True)
 
-elif page == "Predict Price":
-    st.title("Know the correct price of your Car!")
+if st.button("Predict Price"):
+    st.title("Enter the details to predict your car's price")
 
     brand = st.selectbox("Enter brand", (df['brand'].unique()))
     bbbb = df[df['brand'] == brand]
@@ -128,8 +128,6 @@ elif page == "Predict Price":
     st.header(f"Predicted Selling Price: ₹{int(yd['selling_price'][0])}")
     st.subheader("Note:")
     st.write("The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.")
-
-    st.text_input("Have significant damages to your car? Tell us about it here and our support staff will manually help you find a more accurate price for your car.")
 
     if st.button('Download Prediction'):
         prediction = int(yd['selling_price'][0])
