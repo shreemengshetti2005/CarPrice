@@ -31,6 +31,15 @@ scaler_y.fit(df[['selling_price']])
 with open('xgboost_model5.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
+# Custom CSS for larger dropdowns
+st.markdown("""
+    <style>
+    .stSelectbox > div > div:first-child {
+        font-size: 20px !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # Home Page
 st.title("Know the correct price of your Car!")
 st.write("Use this app to predict the selling price of your car based on various parameters.")
@@ -145,6 +154,17 @@ with col3:
         st.altair_chart(scatter, use_container_width=True)
 
 # Sample Predictions and File Upload
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+if uploaded_file is not None:
+    custom_df = pd.read_csv(uploaded_file)
+    st.write(custom_df.head())
+    # Process the custom_df as needed
+
+st.subheader("Sample Predictions")
+sample_data = df.sample(5)
+sample_predictions = loaded_model.predict(xgb.DMatrix(scaler.transform(sample_data)))
+sample_data['predicted_selling_price'] = scaler_y.inverse_transform(pd.DataFrame(sample_predictions))
+st.write(sample_data[['brand', 'model', 'vehicle_age', 'km_driven', 'mileage', 'predicted_selling_price']])
 
 # Sidebar for help
 st.sidebar.subheader("Need Help?")
