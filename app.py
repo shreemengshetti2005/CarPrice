@@ -140,144 +140,179 @@ yd.columns = ['selling_price']
 
 # Display prediction result
 st.header(f"Predicted Selling Price: ₹{int(yd['selling_price'][0])}")
-st.subheader("Note:")
-st.write("The predicted price is based on the provided information and market trends. For a more accurate valuation, consider getting an expert inspection.")
 
-# Define initial layout with three columns
-col1, col2, col3 = st.columns(3)
+st.write("Want to know how to find BHP of your car? Or have doubts regarding vehicle registration? Have a chat with our assistant bot on left.")
 
-# Container for expanded content
-expanded_col = st.container()
 
-with col1:
-    # prediction = int(yd['selling_price'][0])
-    # prediction_df = pd.DataFrame({
-    #     "Brand": [brand],
-    #     "Model": [model],
-    #     "Predicted Selling Price": [prediction]
-    # })
-    # csv = prediction_df.to_csv(index=False)
-    # expanded_col.download_button(label="Download Prediction", data=csv, file_name='prediction.csv', mime='text/csv')
+#####################################################################################################################
+
+
+# Sidebar for help
+st.sidebar.title("Chat-bot")
+# st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
+
+GOOGLE_API_KEY = "AIzaSyCJdcmwF7exDMH0ZvEQl3flYv2DBHgjVqQ"
+
+# Initialize session state
+if 'button_clicked' not in st.session_state:
+    st.session_state.button_clicked = False
+if 'chat_session' not in st.session_state:
+    st.session_state.chat_session = None
+
+# Define the button and set the session state
+if st.sidebar.button("Send parameters to Gemini AI"):
+    st.session_state.button_clicked = True
+
+if st.session_state.button_clicked:
     
-    if st.button("Download Prediction"):
-        prediction = int(yd['selling_price'][0])
-        prediction_df = pd.DataFrame({
-            "Brand": [brand],
-            "Model": [model],
-            "Predicted Selling Price": [prediction]
-        })
-        csv = prediction_df.to_csv(index=False)
-        expanded_col.download_button(label="Get CSV", data=csv, file_name='prediction.csv', mime='text/csv')
+    # Set up Google Gemini-Pro AI model
+    gen_ai.configure(api_key=GOOGLE_API_KEY)
+    modell = gen_ai.GenerativeModel('gemini-pro')
 
+    # Initialize chat session if not already present
+    if st.session_state.chat_session is None:
+        st.session_state.chat_session = modell.start_chat(history=[])
+        # Send the initial context message
+        initial_context = f"You are a bot which helps people find correct price for their second hand cars. The car brand is {brand}, the cars model is {model}, the cars age is {vehicle_age}, the cars km driven is {km_driven} and cars predicted selling price is {int(yd['selling_price'][0])}. Just remember this while having further conversation. For now simply greet the user. Also tell user what all you took as input regarding car"
+        res = st.session_state.chat_session.send_message(initial_context)
+
+    def translate_role_for_streamlit(user_role):
+        if user_role == "model":
+            return "Assistant: "
+        else:
+            return user_role
+    # Display the chat history
+    for message in st.session_state.chat_session.history:
+        if message.parts[0].text != f"You are a bot which helps people find correct price for their second hand cars. The car brand is {brand}, the cars model is {model}, the cars age is {vehicle_age}, the cars km driven is {km_driven} and cars predicted selling price is {int(yd['selling_price'][0])}. Just remember this while having further conversation. For now simply greet the user. Also tell user what all you took as input regarding car":  # Filter out the initial context message
+            with st.sidebar:
+                st.markdown(translate_role_for_streamlit(message.role))
+                st.markdown(message.parts[0].text)
+
+    # Input field for user's message
+    user_prompt = st.sidebar.text_input("Ask Gemini-Pro...")
+    if user_prompt:
+        # Add user's message to chat and display it
+        st.sidebar.write("Me:")
+        st.sidebar.markdown(user_prompt)
+
+        # Send user's message to Gemini-Pro and get the response
+        gemini_response = st.session_state.chat_session.send_message(user_prompt)
+
+        # Display Gemini-Pro's response
+        st.sidebar.write("Bot:")
+        st.sidebar.markdown(gemini_response.parts[0].text)
+
+# Button to clear chat
+if st.sidebar.button("Clear Chat"):
+    st.session_state.chat_session = None
+    st.session_state.button_clicked = False
+    st.sidebar.write("Chat cleared. Start a new conversation.")
+
+
+st.write()
+
+
+
+
+
+# Assuming you have your DataFrame 'df' and other variables like 'brand', 'model', 'yd' already defined.
+
+# Define initial layout with three columns for buttons with equal spacing
+# cool1 = st.button([])
+
+# # Container for expanded content
+# expanded_col = st.container()
+
+# with cool1:
+st.subheader("")
+st.subheader("Want to buy?")
+st.subheader("Find cars under your requirements")
+    
+cost = st.number_input("Enter your max budget",value=500000)
+  
+    
+        
+col1, col2 = st.columns([3, 1])  # Adjust column proportions as needed
+with col1:
+    vehicle_age_find = st.number_input("Enter maximum age", value=4)
 with col2:
-    if st.button("Dataset Summary"):
-        with expanded_col:
-            st.subheader("Dataset Summary")
-            st.write(df.describe())
+    vehicle_age_any_find = st.checkbox("Any", key="age_any")
 
+col3, col4 = st.columns([3, 1])
 with col3:
-    if st.button("Visualizations"):
-        with expanded_col:
-            st.subheader("Data Visualizations")
-            st.write('Visualization of the data we used for model training')
+    km_driven_find = st.number_input("Enter max kilometers driven", value=50000)
+with col4:
+    km_driven_any_find = st.checkbox("Any", key="km_any")
+    
 
-            # # Histogram of vehicle ages
-            # fig, ax = plt.subplots()
-            
-            # ax.hist(df['vehicle_age'], bins=20, color='blue', alpha=0.7)
-            # ax.set_xlabel('Vehicle Age (years)')
-            # ax.set_ylabel('Frequency')
-            
-            # st.pyplot(fig)
+# Adjust values based on checkbox status
+if vehicle_age_any_find:
+    vehicle_age_find = float('inf')  # Exceptionally large value
 
-            # st.subheader("Interactive Scatter Plot")
-            # scatter = alt.Chart(df).mark_circle(size=60).encode(
-            #     x='transmission_type',
-            #     y='selling_price',
-            #     # color='fuel_type',
-            #     tooltip=['brand', 'model', 'mileage', 'selling_price']
-            # ).interactive()
+if km_driven_any_find:
+    km_driven_find = float('inf')  # Exceptionally large value
 
-            # st.altair_chart(scatter, use_container_width=True)
+# bbbb = df[df['brand'] == brand]
+ddde = df[(df['selling_price'] <= cost) & (df['vehicle_age'] <= vehicle_age_find) & (df['km_driven'] <= km_driven_find)]
+
+ddde = ddde['car_name'].unique()
+
+# ddde = pd.DataFrame(ddde, columns=["Car Name"])
+
+# # Add custom CSS to set the width of the dataframe
+# st.markdown(
+#     """
+#     <style>
+#     .dataframe-container {
+#         width: 100% !important;
+#     }
+#     </style>
+#     """,
+#     unsafe_allow_html=True
+# )
+
+# # Use the CSS class on the dataframe
+# st.markdown('<div class="dataframe-container">', unsafe_allow_html=True)
+# st.dataframe(ddde)
+# st.markdown('</div>', unsafe_allow_html=True)
+
+emp = "Cars available under these filters are "
+lenn = len(ddde)
+for i in range(lenn):
+    if i != lenn-1:
+        emp += f"{ddde[i]}, "
+    else:
+        emp += f"{ddde[i]}."
 
 
-            # # Scatter plot of mileage vs selling price
-            # fig, ax = plt.subplots()
-            # ax.scatter(df['mileage'], df['selling_price'], alpha=0.5)
-            # ax.set_xlabel('Mileage (Kmpl)')
-            # ax.set_ylabel('Selling Price')
-            # st.pyplot(fig)
+st.write(emp)
 
-            # Interactive Scatter Plot
-            st.subheader("Interactive Scatter Plot")
-            scatter = alt.Chart(df).mark_circle(size=60).encode(
-                x='mileage',
-                y='selling_price',
-                color='fuel_type',
-                tooltip=['brand', 'model', 'mileage', 'selling_price']
-            ).interactive()
+if st.button("Download List of cars"):
+    ddde = pd.DataFrame(ddde, columns=['Car Name'])
+    csv = ddde.to_csv(index=False)
+    st.download_button(label="Get CSV", data=csv, file_name='car_list.csv', mime='text/csv')
 
-            st.altair_chart(scatter, use_container_width=True)
 
-            st.subheader("Interactive Scatter Plot")
-            scatter = alt.Chart(df).mark_circle(size=60).encode(
-                x='vehicle_age',
-                y='selling_price',
-                # color='fuel_type',
-                tooltip=['brand', 'model', 'mileage', 'selling_price']
-            ).interactive()
 
-            st.altair_chart(scatter, use_container_width=True)
+    
+    
+    
+    
+    
+    
+
+    
+    
+
+
 
 st.markdown('</div>', unsafe_allow_html=True)
 
 
 
 
-# Sidebar for help
-st.sidebar.subheader("Need Help?")
-st.sidebar.info("If you have any questions or need assistance, please contact our support team.")
-
-GOOGLE_API_KEY = "AIzaSyCJdcmwF7exDMH0ZvEQl3flYv2DBHgjVqQ"
-
-# Set up Google Gemini-Pro AI model
-gen_ai.configure(api_key=GOOGLE_API_KEY)
-model = gen_ai.GenerativeModel('gemini-pro')
+# import streamlit as st
+# from google_gemini_pro import gen_ai  # Assuming you have the relevant import for the gemini-pro model
 
 
-# Function to translate roles between Gemini-Pro and Streamlit terminology
-def translate_role_for_streamlit(user_role):
-    if user_role == "model":
-        return "assistant"
-    else:
-        return user_role
 
-
-# Initialize chat session in Streamlit if not already present
-if "chat_session" not in st.session_state:
-    st.session_state.chat_session = model.start_chat(history=[])
-
-
-# # Display the chatbot's title on the page
-# st.title("🤖 Gemini Pro - ChatBot")
-
-# Display the chat history
-for message in st.session_state.chat_session.history:
-    # with st.(translate_role_for_streamlit(message.role)):
-    st.sidebar.markdown(message.parts[0].text)
-
-# Input field for user's message
-user_prompt = st.sidebar.text_input("Ask Gemini-Pro...")
-if user_prompt:
-    # Add user's message to chat and display it
-    st.sidebar.write("Me:")
-    st.sidebar.markdown(user_prompt)
-
-    # Send user's message to Gemini-Pro and get the response
-    gemini_response = st.session_state.chat_session.send_message(user_prompt)
-
-    # # Display Gemini-Pro's response
-    # with st.write("assistant"):
-    #     # st.markdown(gemini_response.text)
-    st.sidebar.write("Bot:")
-    st.sidebar.markdown(gemini_response.text)
