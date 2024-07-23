@@ -30,7 +30,7 @@ scaler.fit(cdf)
 scaler_y = StandardScaler()
 scaler_y.fit(df[['selling_price']])
 
-with open('xgboost_model55.pkl', 'rb') as f:
+with open('xgboost_model_hyper1_lessoverfit.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
 
