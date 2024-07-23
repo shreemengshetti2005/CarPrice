@@ -91,12 +91,12 @@ aaaa = df[df['model'] == model]
 aaaa['engine'] = [int(value) for value in aaaa['engine']]
 aaaa['max_power'] = [int(value) for value in aaaa['max_power']]
 
-vehicle_age = st.number_input("Enter age", value=9)
-km_driven = st.number_input("Enter km driven", value=120000)
+vehicle_age = st.number_input("Enter age", value=3)
+km_driven = st.number_input("Enter km driven", value=60000)
 seller_type = 'Individual'
 fuel_type = st.selectbox("Enter fuel type", df['fuel_type'].unique())
 transmission_type = st.selectbox("Enter transmission type", df['transmission_type'].unique())
-mileage = st.number_input("Whats is its mileage (Kmpl)?", value=19.7)
+mileage = st.number_input("Whats is its mileage (Kmpl)?", value=21.5)
 engine = st.selectbox("Enter Engine capacity (cc)", (aaaa['engine'].unique()))
 max_power = st.selectbox("Max power in BHP",(aaaa['max_power'].unique()))
 seats = st.selectbox("Number of seats",aaaa['seats'].unique())
