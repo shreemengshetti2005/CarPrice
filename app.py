@@ -30,7 +30,7 @@ scaler.fit(cdf)
 scaler_y = StandardScaler()
 scaler_y.fit(df[['selling_price']])
 
-with open('xgboost_model5.pkl', 'rb') as f:
+with open('xgboost_model_hyper1_lessoverfit.pkl', 'rb') as f:
     loaded_model = pickle.load(f)
 
 
@@ -129,7 +129,7 @@ X_norm = X_norm.drop(columns=['selling_price'])
 
 # Prepare data for prediction
 X_for_tree = xgb.DMatrix(X_norm)
-y = loaded_model.predict(X_for_tree)
+y = loaded_model.predict(X_norm)
 
 # Inverse transform the predicted value
 y = pd.DataFrame(y)
